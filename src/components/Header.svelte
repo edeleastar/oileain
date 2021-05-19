@@ -37,9 +37,9 @@
   </div>
   <a href="/#/navigator" uk-tooltip="title: Explore Island Maps; pos:bottom">
     <Icon data={faMapMarked} scale="3"/>
-  </a> <a href="http://www.oileain.org/" uk-tooltip="title: Oileain Book Site; pos:bottom"> <img
-    data-src="http://www.oileain.org/wp-content/uploads/2015/05/oileain_2X.png" width="70px" height="" alt="" uk-img/>
-</a> <a href="https://github.com/wit-hdip-comp-sci-2020/oileain-svelte" uk-tooltip="title: Project Source; pos:bottom">
+  </a> <a href="https://www.oileain.org/" target="_blank" uk-tooltip="title: Oileain Book Site; pos:bottom"> <img
+    data-src="https://www.oileain.org/wp-content/uploads/2015/05/oileain_2X.png" width="70px" height="" alt="" uk-img/>
+</a> <a href="https://github.com/edeleastar/oileain" target="_blank" uk-tooltip="title: Project Source; pos:bottom">
   <Icon data={faGithub} scale="3"/>
 </a>
 </div>
