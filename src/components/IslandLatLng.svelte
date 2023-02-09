@@ -3,9 +3,14 @@
   export let island: Island;
 </script>
 
-<div class="uk-card uk-card-default uk-card-body uk-padding-small">
-  <caption>GPS-compatible</caption>
-  <table class="uk-table uk-table-divider uk-table-small">
+
+<section class="section">
+  <h1 class="title">{island.name}</h1>
+  <h2 class="subtitle">
+    GPS-compatible
+  </h2>
+<div>
+  <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
     <tbody>
       <tr>
         <td>Latitude</td>
@@ -18,3 +23,4 @@
     </tbody>
   </table>
 </div>
+</section>

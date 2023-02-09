@@ -20,7 +20,5 @@
 </script>
 
 {#if coasts}
-  <div class="uk-container">
-    <LeafletMap height={800} {markerLayers} />
-  </div>
+  <LeafletMap height={800} {markerLayers} />
 {/if}

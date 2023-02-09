@@ -37,16 +37,14 @@
 </script>
 
 {#if island}
-  <div class="uk-text-center" uk-grid>
-    <div class="uk-width-expand@m uk-animation-slide-left">
+  <div class="columns">
+    <div class="column">
       {#key refresh}
         <LeafletMap id="map-main" {marker} zoom={7} height={560}/>
-        <div class="uk-card uk-card-default uk-card-body">
-          <IslandCoordinates {island}/>
-        </div>
+        <IslandCoordinates {island}/>
       {/key}
     </div>
-    <div class="uk-width-1-3@m uk-animation-slide-right">
+    <div class="column">
       <IslandDescription {island}/>
     </div>
   </div>

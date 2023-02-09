@@ -4,11 +4,11 @@
   export let island: Island;
 </script>
 
-<div class="uk-text-center uk-text-small" uk-grid>
-  <div class="uk-width-expand@m">
-    <div class="uk-card uk-card-default uk-card-body uk-padding-small">
-      <caption>GPS-compatible</caption>
-      <table class="uk-table uk-table-divider uk-table-small">
+<section class="section has-text-centered">
+      <h2 class="subtitle">
+        GPS-compatible
+      </h2>
+      <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
         <tbody>
           <tr>
             <td>Latitude</td>
@@ -20,12 +20,10 @@
           </tr>
         </tbody>
       </table>
-    </div>
-  </div>
-  <div class="uk-width-1-2@m">
-    <div class="uk-card uk-card-default uk-card-body uk-padding-small">
-      <caption>Transverse Mercator</caption>
-      <table class="uk-table uk-table-divider uk-table-small">
+  <h2 class="subtitle">
+      Transverse Mercator
+    </h2>
+      <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
         <tbody>
           <tr>
             <td>Eastings</td>
@@ -37,14 +35,10 @@
           </tr>
         </tbody>
       </table>
-    </div>
-  </div>
-</div>
-<div class="uk-text-center uk-text-small" uk-grid>
-  <div class="uk-width-expand@m">
-    <div class="uk-card uk-card-default uk-card-body uk-padding-small">
-      <caption>Full Irish Grid</caption>
-      <table class="uk-table uk-table-divider uk-table-small">
+
+<h2 class="subtitle">
+      Full Irish Grid</h2>
+      <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
         <tbody>
           <tr>
             <td>Eastings</td>
@@ -56,12 +50,10 @@
           </tr>
         </tbody>
       </table>
-    </div>
-  </div>
-  <div class="uk-width-1-2@m">
-    <div class="uk-card uk-card-default uk-card-body uk-padding-small">
-      <caption>Irish Grid</caption>
-      <table class="uk-table uk-table-divider uk-table-small">
+
+  <h2 class="subtitle">
+    Irish Grid</h2>
+      <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
         <tbody>
           <tr>
             <td>Sheet</td>
@@ -77,6 +69,4 @@
           </tr>
         </tbody>
       </table>
-    </div>
-  </div>
-</div>
+</section>

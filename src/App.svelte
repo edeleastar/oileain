@@ -24,7 +24,7 @@
 </svelte:head>
 
 <Header title="Oileain"/>
-<div class="uk-container">
+<div class="container">
   <Router {routes}/>
 </div>
-<Sidebar />
+<!-- <Sidebar /> -->

@@ -28,25 +28,17 @@
 </script>
 
 {#if coasts}
-  <div class="uk-text-center" uk-grid>
-    <div class="uk-width-1-3@m uk-animation-scale-up">
+ <div class="columns">
+  <div class="column has-text-centered">
       <LeafletMap id="map-main" zoom={7} height={560} {markerLayers} on:message={markerSelect} />
-      {#if island}
-        <div class="uk-card uk-card-default uk-card-body">
-          <IslandLatLng {island} />
-        </div>
+        {#if island}
+        <IslandLatLng {island} />
       {/if}
     </div>
-    <div class="uk-width-expand@m uk-animation-scale-up">
+    <div class="column">
       <LeafletMap id="map-secondary" height={250} activeLayer="Satellite" bind:this={navigator} />
       {#if island}
-        <div class="uk-card uk-card-default uk-card-body">
           <IslandDescription {island} />
-        </div>
-      {:else}
-        <div class="uk-card uk-card-default uk-card-body">
-          <p>Select Island marker on map to view details...</p>
-        </div>
       {/if}
     </div>
   </div>

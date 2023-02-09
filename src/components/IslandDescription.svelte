@@ -4,8 +4,8 @@
   export let island: Island;
 </script>
 
-<div class="ui segment">
+<section class="section">
   <div class="description">
     {@html island.description}
   </div>
-</div>
+</section>
