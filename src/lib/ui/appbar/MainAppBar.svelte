@@ -24,6 +24,7 @@
     <AppBar.Trail>
       <Icon type="home" link="/" height="64" tip="Home"></Icon>
       <Icon type="explorer" link="/explorer" height="64" tip="Navigator"></Icon>
+      <Icon type="navigator" link="/navigator/Great-Saltee-Island" height="64" tip="Explorer"></Icon>
       <Separator />
     </AppBar.Trail>
   </AppBar.Toolbar>
