@@ -23,6 +23,7 @@
     </AppBar.Headline>
     <AppBar.Trail>
       <Icon type="home" link="/" height="64" tip="Home"></Icon>
+      <Icon type="explorer" link="/explorer" height="64" tip="Navigator"></Icon>
       <Separator />
     </AppBar.Trail>
   </AppBar.Toolbar>
