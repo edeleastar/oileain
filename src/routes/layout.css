@@ -1,7 +1,14 @@
 @import "tailwindcss";
-@plugin "@tailwindcss/forms";
 @plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/forms";
+@import "@skeletonlabs/skeleton-svelte";
 
 @import "@skeletonlabs/skeleton";
-@import "@skeletonlabs/skeleton-svelte";
+@import "@skeletonlabs/skeleton/themes/seafoam";
 @import "@skeletonlabs/skeleton/themes/cerberus";
+@import "@skeletonlabs/skeleton/themes/terminus";
+@import "@skeletonlabs/skeleton/themes/rose";
+@import "@skeletonlabs/skeleton/themes/vintage";
+@import "../lib/ui/themes/oileain.css";
+
+@custom-variant dark (&:where(.dark, .dark *));

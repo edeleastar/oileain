@@ -5,6 +5,7 @@
   import Separator from "../components/Separator.svelte";
   import InfoSidebar from "./sidebar/InfoSidebar.svelte";
   import CoastSidebar from "./sidebar/CoastSidebar.svelte";
+  import LayoutMenu from "./sidebar/LayoutMenu.svelte";
 </script>
 
 <AppBar>
@@ -29,6 +30,7 @@
       <Icon type="explorer" link="/explorer" height="64" tip="Navigator"></Icon>
       <Icon type="navigator" link="/navigator/Great-Saltee-Island" height="64" tip="Explorer"></Icon>
       <Separator />
+      <LayoutMenu />
       <CoastSidebar />
     </AppBar.Trail>
   </AppBar.Toolbar>
