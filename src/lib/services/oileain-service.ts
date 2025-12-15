@@ -14,9 +14,7 @@ export const oileainService = {
   // Retrieve shallow version of all islands (without descriptions and other details)
   async getCoasts(fetchFn: typeof fetch = fetch) {
     if (this.coasts.length == 0) {
-      const response = await fetchFn(
-        "https://edeleastar.github.io/oileain-model-2/api/oileain-all-slim.json"
-      );
+      const response = await fetchFn("https://edeleastar.github.io/oileain-model-2/api/oileain-all-slim.json");
       this.coasts = await response.json();
       this.createIndexes();
       this.markerLayers = generateMarkerLayers(this.coasts);
