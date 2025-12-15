@@ -1,7 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { Portal, Tooltip } from "@skeletonlabs/skeleton-svelte";
-  import { getIconColour, getIconType } from "./icons";
+  import { getIconColour, getIconType } from "../themes/icons";
 
   interface Props {
     type?: string;
