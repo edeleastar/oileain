@@ -3,12 +3,15 @@
   import { currentIsland, currentView } from "$lib/runes.svelte";
   import Icon from "../components/Icon.svelte";
   import Separator from "../components/Separator.svelte";
+  import InfoSidebar from "./sidebar/InfoSidebar.svelte";
+  import CoastSidebar from "./sidebar/CoastSidebar.svelte";
 </script>
 
 <AppBar>
   <AppBar.Toolbar class="grid-cols-[auto_1fr_auto]">
     <AppBar.Lead>
       <div class="flex items-center gap-6">
+        <InfoSidebar />
         <Separator />
         <Icon type="oileain" height="80"></Icon>
       </div>
@@ -26,6 +29,7 @@
       <Icon type="explorer" link="/explorer" height="64" tip="Navigator"></Icon>
       <Icon type="navigator" link="/navigator/Great-Saltee-Island" height="64" tip="Explorer"></Icon>
       <Separator />
+      <CoastSidebar />
     </AppBar.Trail>
   </AppBar.Toolbar>
 </AppBar>

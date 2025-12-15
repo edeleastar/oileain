@@ -4,6 +4,9 @@
   import LeafletMap from "$lib/ui/LeafletMap.svelte";
   import { currentIsland, currentView } from "$lib/runes.svelte";
   import type { PageProps } from "./$types";
+  import { oileainService } from "$lib/services/oileain-service";
+  import { generateMarkerSpec } from "$lib/services/oileain-utils";
+  import { page } from "$app/state";
 
   let { data }: PageProps = $props();
   let mapTerrain: LeafletMap;
@@ -11,6 +14,13 @@
   // svelte-ignore state_referenced_locally
   currentIsland.value = data.island;
   currentView.value = "Wanderer";
+
+  $effect(() => {
+    oileainService.getIslandById(page.params.id).then((result) => {
+      currentIsland.value = data.island;
+      mapTerrain?.addPopupMarkerAndZoom("selected", generateMarkerSpec(result));
+    });
+  });
 </script>
 
 <div class="grid grid-cols-2 gap-4">
