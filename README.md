@@ -1,38 +1,23 @@
-# sv
+# Oileain
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+The application is built using SvelteKit & Leaflet. It is running here:
 
-## Creating a project
+- <https://oileain.netlify.app>
 
-If you're seeing this, you've probably already done this step. Congrats!
+It is an experiment in rendering maps of the Islands of Ireland on a Svelte single page application using Leaflet.js maps. The island details are derived from the book [Oileain](http://www.oileain.org/) by David Walsh. It relies the API hosted in [this repository](https://github.com/edeleastar/oileain-api), which is an immutable json version of David's book.
 
-```sh
-# create a new project in the current directory
-npx sv create
+The application is a [SvelteKit](https://svelte.dev/docs/kit/introduction) app with a UX designed using [Skeleton](https://www.skeleton.dev/). The source [public on GithHb](https://github.com/edeleastar/oileain-refresh).
 
-# create a new project in my-app
-npx sv create my-app
-```
+Oileain (Irish for "islands") is a web application that allows users to:
 
-## Developing
+- View a comprehensive map of Irish islands
+- Explore islands by coastal region
+- Navigate to detailed information about specific islands
+- View satellite, terrain, and contextual maps for navigation purposes
+- Access coordinates and descriptive information for points of interest
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+The application serves as both a reference tool and an exploration platform for those interested in Irish geography and island navigation.
 
-```sh
-npm run dev
+The detailed architecture of the application can be explored here:
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- <https://deepwiki.com/edeleastar/oileain-refresh/>

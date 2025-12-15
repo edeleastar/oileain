@@ -7,12 +7,16 @@
     markdown?: string;
   }
 
-  let  markdown = `
-  The application is built using SvelteKit & Leaflet It is running here:
+  let markdown = `
+# Oileain
+
+The application is built using SvelteKit & Leaflet. It is running here:
 
 - <https://oileain.netlify.app>
 
 It is an experiment in rendering maps of the Islands of Ireland on a Svelte single page application using Leaflet.js maps. The island details are derived from the book [Oileain](http://www.oileain.org/) by David Walsh. It relies the API hosted in [this repository](https://github.com/edeleastar/oileain-api), which is an immutable json version of David's book.
+
+The application is a [SvelteKit](https://svelte.dev/docs/kit/introduction) app with a UX designed using [Skeleton](https://www.skeleton.dev/). The source [public on GithHb](https://github.com/edeleastar/oileain-refresh).
 
 Oileain (Irish for "islands") is a web application that allows users to:
 
@@ -26,14 +30,15 @@ The application serves as both a reference tool and an exploration platform for 
 
 The detailed architecture of the application can be explored here:
 
-- <https://deepwiki.com/wit-hdip-comp-sci-2024/oileain>
-`
+- <https://deepwiki.com/edeleastar/oileain-refresh/>
+
+`;
 
   let htmlContent = $derived(markdown ? marked(markdown) : "");
 </script>
 
 {#snippet menuSelector()}
-  <div class="hover:preset-tonal-secondary dark:hover:preset-tonal-tertiary rounded-lg p-2">
+  <div class="rounded-lg p-2 hover:preset-tonal-secondary dark:hover:preset-tonal-tertiary">
     <Icon type="info" tip="Oileain Info" height="40" />
   </div>
 {/snippet}
