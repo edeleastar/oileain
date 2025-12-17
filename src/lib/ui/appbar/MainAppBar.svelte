@@ -18,7 +18,7 @@
       </div>
     </AppBar.Lead>
     <AppBar.Headline>
-      <h1>Oileain: islands of Ireland : {currentView.value}</h1>
+      <h1 class="text-2xl">Oileain: Islands of Ireland : {currentView.value}</h1>
       {#if currentIsland.value}
         {@html currentIsland.value.nameHtml}
       {:else}
@@ -26,9 +26,9 @@
       {/if}
     </AppBar.Headline>
     <AppBar.Trail>
-      <Icon type="home" link="/" height="64" tip="Home"></Icon>
-      <Icon type="explorer" link="/explorer" height="64" tip="Navigator"></Icon>
-      <Icon type="navigator" link="/navigator/Great-Saltee-Island" height="64" tip="Explorer"></Icon>
+      <Icon type="home" link="/" height="64" tip="Home" view="Home"></Icon>
+      <Icon type="explorer" link="/explorer" height="64" tip="Navigator" view="Explorer"></Icon>
+      <Icon type="navigator" link="/navigator/Great-Saltee-Island" height="64" tip="Explorer" view="Navigator"></Icon>
       <Separator />
       <LayoutMenu />
       <CoastSidebar />
