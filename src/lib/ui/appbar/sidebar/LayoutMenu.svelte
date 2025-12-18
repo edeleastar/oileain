@@ -65,7 +65,7 @@
           <Combobox.Trigger />
         </Combobox.Control>
         <Portal>
-          <Combobox.Positioner class="z-[1000]!">
+          <Combobox.Positioner class="z-50">
             <Combobox.Content>
               {#each themes as item (item.value)}
                 <Combobox.Item {item}>
