@@ -1,16 +1,16 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
-  import LeafletMap from "$lib/ui/maps/LeafletMap.svelte";
+  import Map from "$lib/ui/maps/Map.svelte";
   import IslandDescription from "$lib/ui/islandinfo/IslandDescription.svelte";
   import { currentIsland, currentView, markerSelected } from "$lib/runes.svelte";
   import type { MarkerSpec } from "$lib/services/markers";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
-  let mapTerrain: LeafletMap;
-  let mapSat: LeafletMap;
-  let mapContext: LeafletMap;
+  let mapTerrain: Map;
+  let mapSat: Map;
+  let mapContext: Map;
   currentView.value = "Navigator";
 
   async function zoomTo(marker: MarkerSpec) {
@@ -36,7 +36,7 @@
 <div class="grid grid-cols-2 gap-4">
   <div class="m-2 flex flex-col">
     <div class="m-2 overflow-hidden rounded-lg border">
-      <LeafletMap id="terrain" height={40} bind:this={mapTerrain} zoom={14} />
+      <Map id="terrain" height={40} bind:this={mapTerrain} zoom={14} />
     </div>
     <div class="overflow-y-auto" style="height: 40vh">
       <div class="flex min-h-full items-center justify-center">
@@ -46,10 +46,10 @@
   </div>
   <div class="m-2 flex flex-col">
     <div class="m-2 overflow-hidden rounded-lg border">
-      <LeafletMap id="sat" activeLayer="Satellite" height={40} bind:this={mapSat} zoom={14} />
+      <Map id="sat" activeLayer="Satellite" height={40} bind:this={mapSat} zoom={14} />
     </div>
     <div class="m-2 overflow-hidden rounded-lg border">
-      <LeafletMap id="context" height={40} markerLayers={data.markerLayers} bind:this={mapContext} zoom={12} />
+      <Map id="context" height={40} markerLayers={data.markerLayers} bind:this={mapContext} zoom={12} />
     </div>
   </div>
 </div>
