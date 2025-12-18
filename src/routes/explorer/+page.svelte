@@ -4,7 +4,7 @@
   import { generateMarkerSpec } from "$lib/services/oileain-utils";
   import IslandDescription from "$lib/ui/IslandDescription.svelte";
   import IslandLatLng from "$lib/ui/IslandLatLng.svelte";
-  import LeafletMap from "$lib/ui/LeafletMap.svelte";
+  import LeafletMap from "$lib/ui/maps/LeafletMap.svelte";
   import type { PageProps } from "./$types";
   let { data }: PageProps = $props();
   let navigator: LeafletMap;

@@ -1,7 +1,7 @@
 <script lang="ts">
   import IslandCoordinates from "$lib/ui/IslandCoordinates.svelte";
   import IslandDescription from "$lib/ui/IslandDescription.svelte";
-  import LeafletMap from "$lib/ui/LeafletMap.svelte";
+  import LeafletMap from "$lib/ui/maps/LeafletMap.svelte";
   import { currentIsland, currentView } from "$lib/runes.svelte";
   import type { PageProps } from "./$types";
   import { oileainService } from "$lib/services/oileain-service";

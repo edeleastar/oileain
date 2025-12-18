@@ -1,5 +1,5 @@
 <script lang="ts">
-  import LeafletMap from "$lib/ui/LeafletMap.svelte";
+  import LeafletMap from "$lib/ui/maps/LeafletMap.svelte";
   import { currentView } from "$lib/runes.svelte";
   import type { PageProps } from "./$types";
   import type { MarkerLayer } from "$lib/services/markers";
