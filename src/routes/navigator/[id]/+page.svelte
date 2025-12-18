@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import LeafletMap from "$lib/ui/maps/LeafletMap.svelte";
-  import IslandDescription from "$lib/ui/IslandDescription.svelte";
+  import IslandDescription from "$lib/ui/islandinfo/IslandDescription.svelte";
   import { currentIsland, currentView, markerSelected } from "$lib/runes.svelte";
   import type { MarkerSpec } from "$lib/services/markers";
   import type { PageProps } from "./$types";
