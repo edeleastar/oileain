@@ -11,7 +11,7 @@
 
 <AppShell>
   <div
-    class="bg-surface-100-800-token border-surface-200-700-token mx-2 mb-2 w-auto overflow-hidden rounded-xl border-[1px] p-4 sm:mx-4 dark:bg-surface-950"
+    class="bg-surface-100-800 border-surface-200-700 mx-2 mb-2 w-auto overflow-hidden rounded-container border p-4 sm:mx-4"
   >
     {@render children()}
   </div>
