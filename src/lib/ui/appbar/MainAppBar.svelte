@@ -3,9 +3,9 @@
   import { currentIsland, currentView } from "$lib/runes.svelte";
   import Icon from "../components/Icon.svelte";
   import Separator from "../components/Separator.svelte";
-  import InfoSidebar from "./sidebar/InfoSidebar.svelte";
-  import CoastSidebar from "./sidebar/CoastSidebar.svelte";
-  import LayoutMenu from "./sidebar/LayoutMenu.svelte";
+  import InfoSidebar from "./menus/InfoSidebar.svelte";
+  import CoastSidebar from "./menus/CoastSidebar.svelte";
+  import LayoutMenu from "./menus/LayoutMenu.svelte";
 </script>
 
 <AppBar>
