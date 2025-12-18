@@ -42,7 +42,11 @@
 {#snippet displayIcon()}
   {#if type}
     {#if link}
-      <div class="flex items-center rounded-lg p-2 hover:preset-tonal-secondary dark:hover:preset-tonal-tertiary {isActive ? 'border-2 border-primary-500' : ''}">
+      <div
+        class="flex items-center rounded-lg p-2 hover:preset-tonal-secondary dark:hover:preset-tonal-tertiary {isActive
+          ? 'border-2 border-primary-500'
+          : ''}"
+      >
         <a class="btn btn-sm" {target} href={link}>
           <Icon icon={getIconType(type)} color={getIconColour(type)} {width} {height} />
           {text}
@@ -52,7 +56,7 @@
       <Icon icon={getIconType(type)} color={getIconColour(type)} {width} {height} />
     {/if}
   {:else if link}
-    <a {target} href={link} class={isActive ? 'border-2 border-primary-500 rounded-lg p-1' : ''}>
+    <a {target} href={link} class={isActive ? "rounded-lg border-2 border-primary-500 p-1" : ""}>
       {color}
       <Icon {icon} {color} {width} {height} />
     </a>
@@ -68,7 +72,7 @@
     </Tooltip.Trigger>
     <Portal>
       <Tooltip.Positioner>
-        <Tooltip.Content class="z-9999 max-w-md card bg-surface-100-900 p-2 shadow-xl">
+        <Tooltip.Content class="z-50 max-w-md card preset-filled-surface-100-900 p-2 shadow-xl">
           {tip}
         </Tooltip.Content>
       </Tooltip.Positioner>

@@ -139,4 +139,4 @@
   }
 </script>
 
-<div {id} style="height: {height}vh"></div>
+<div class="z-10" {id} style="height: {height}vh"></div>
