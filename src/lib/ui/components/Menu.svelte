@@ -7,8 +7,8 @@
   <Menu.Trigger>{@render menuSelector()}</Menu.Trigger>
   <Portal>
     <Menu.Positioner>
-      <Menu.Content class="z-999  m-4 max-w-[500px] space-y-4 card bg-surface-50">
-        <nav class="card-body list-nav w-56 w-full space-y-2 card bg-gray-100 p-2 shadow-lg dark:bg-gray-800">
+      <Menu.Content class="z-50 m-4 max-w-[500px] space-y-4 card preset-filled-surface-100-900">
+        <nav class="w-56 w-full space-y-2 p-2">
           {@render menuContent()}
         </nav>
       </Menu.Content>
