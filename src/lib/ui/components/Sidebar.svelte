@@ -20,7 +20,7 @@
   </Dialog.Trigger>
   <Portal>
     <Dialog.Backdrop class="h-screen w-[480px] bg-surface-100-900 shadow-xl" />
-    <Dialog.Positioner class={`fixed inset-0 z-50 flex ${positionerJustify} z-9999`}>
+    <Dialog.Positioner class={`fixed inset-0 z-50 flex ${positionerJustify}`}>
       <Dialog.Content
         class={`h-screen w-sm space-y-4 overflow-y-scroll card bg-surface-100-900 p-4 opacity-0 shadow-xl transition transition-discrete ${contentTranslate} data-[state=open]:opacity-100 starting:data-[state=open]:opacity-0`}
       >
