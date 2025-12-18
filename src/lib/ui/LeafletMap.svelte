@@ -1,7 +1,7 @@
 <script lang="ts">
   import "leaflet/dist/leaflet.css";
   import { onMount } from "svelte";
-  import type { Control, Layer, LayerGroup, Map as LeafletMap, Marker } from "leaflet";
+  import type { Control, Layer, LayerGroup, Map as LeafletMap, Marker, TileLayer, LatLng } from "leaflet";
   import type { MarkerLayer, MarkerSpec } from "../services/markers";
   import { markerSelected } from "$lib/runes.svelte";
 
@@ -23,8 +23,8 @@
   let imap: LeafletMap;
   let control: Control.Layers;
   let overlays: Control.LayersObject = {};
-  let baseLayers: any;
-  let L: any;
+  let baseLayers: Record<string, TileLayer>;
+  let L: typeof import("leaflet").default;
 
   let markerMap = new Map<Marker, MarkerSpec>();
 
@@ -78,7 +78,7 @@
     }
   }
 
-  async function addPopup(layerTitle: string, content: string, location: any) {
+  async function addPopup(layerTitle: string, content: string, location: LatLng) {
     let popupGroup: LayerGroup;
     if (!overlays[layerTitle]) {
       popupGroup = L.layerGroup([]);
@@ -103,7 +103,7 @@
     marker.bindPopup(popup);
   }
 
-  export async function moveTo(location: any, zoom: number = 0) {
+  export async function moveTo(location: LatLng, zoom: number = 0) {
     const leaflet = await import("leaflet");
     L = leaflet.default;
     if (zoom == 0) {
