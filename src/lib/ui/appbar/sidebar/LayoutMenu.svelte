@@ -1,7 +1,7 @@
 <script lang="ts">
   import Menu from "$lib/ui/components/Menu.svelte";
   import Icon from "$lib/ui/components/Icon.svelte";
-  import { Combobox, SegmentedControl, Portal } from "@skeletonlabs/skeleton-svelte";
+  import { Combobox, SegmentedControl, Portal, useListCollection } from "@skeletonlabs/skeleton-svelte";
   import { themeService } from "$lib/ui/themes/themes.svelte";
   import { currentTheme, lightMode } from "$lib/runes.svelte";
 
@@ -12,6 +12,15 @@
 
   let theme = $state([currentTheme.value]);
   let themes = $state(themeService.themes.map((element) => ({ label: element.name, value: element.name })));
+
+  let collection = $derived.by(() =>
+    useListCollection({
+      items: themes,
+      itemToString: (item: ComboxData) => item.label,
+      itemToValue: (item: ComboxData) => item.value
+    })
+  );
+
   const onOpenChange = () => {
     themes = themeService.themes.map((element) => ({ label: element.name, value: element.name }));
   };
@@ -57,6 +66,8 @@
       <Combobox
         class="w-full max-w-md"
         placeholder={theme[0]}
+        {collection}
+        value={theme}
         {onOpenChange}
         onValueChange={(e) => ((theme = e.value), changeTheme(e.value!))}
       >
@@ -65,9 +76,9 @@
           <Combobox.Trigger />
         </Combobox.Control>
         <Portal>
-          <Combobox.Positioner class="z-50">
-            <Combobox.Content>
-              {#each themes as item (item.value)}
+          <Combobox.Positioner class="z-[9999]">
+            <Combobox.Content class="z-[9999]">
+              {#each collection.items as item (item.value)}
                 <Combobox.Item {item}>
                   <Combobox.ItemText>{item.label}</Combobox.ItemText>
                   <Combobox.ItemIndicator />
