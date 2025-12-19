@@ -1,10 +1,11 @@
 <script lang="ts">
-  import LeafletMap from "$lib/ui/LeafletMap.svelte";
+  import Map from "$lib/ui/maps/Map.svelte";
   import { currentView } from "$lib/runes.svelte";
   import type { PageProps } from "./$types";
-  import type { MarkerLayer } from "$lib/services/markers";
+  import type { MarkerLayer } from "$lib/ui/maps/map";
+
   let { data }: PageProps = $props();
   currentView.value = "Home";
 </script>
 
-<LeafletMap height={85} markerLayers={data.markerLayers as MarkerLayer[]} />
+<Map height={85} markerLayers={data.markerLayers as MarkerLayer[]} />

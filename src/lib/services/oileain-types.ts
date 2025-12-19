@@ -1,7 +1,7 @@
-import type { MarkerLayer, MarkerSpec } from "./markers";
-
 // Types for the geographic model as encoded in
 //  - https://github.com/edeleastar/oileain-api
+
+import type { MarkerLayer, MarkerSpec } from "$lib/ui/maps/map";
 
 // Geodetic Co-ordinates
 // WGS84/ETRS89
