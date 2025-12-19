@@ -3,8 +3,7 @@
   import { onMount, onDestroy } from "svelte";
   import { mapProvider } from "$lib/runes.svelte";
   import { LeafletMapProvider } from "./leaflet-map";
-  import type { MarkerLayer, MarkerSpec, MapLocation, MapProvider, Overlays, MapMarker } from "./map";
-  import type { LeafletBaseLayers } from "./leaflet-map";
+  import type { MarkerLayer, MarkerSpec, MapLocation, MapProvider } from "./map";
 
   let {
     id = "home-map-id",
@@ -17,7 +16,7 @@
     marker = { id: "", title: "", location: { lat: 53.2734, lng: -7.7783203 } } as MarkerSpec
   } = $props();
 
-  let baseLayers: LeafletBaseLayers = {};
+  //let baseLayers: LeafletBaseLayers = {};
 
   const provider = $state<MapProvider | null>(mapProvider.value === "leaflet" ? new LeafletMapProvider() : null);
 
@@ -25,13 +24,7 @@
     if (!provider) return;
 
     // Initialize map using provider
-    baseLayers = (await provider.initializeMap(
-      id,
-      location as MapLocation,
-      zoom,
-      minZoom,
-      activeLayer
-    )) as unknown as LeafletBaseLayers;
+    await provider.initializeMap(id, location as MapLocation, zoom, minZoom, activeLayer);
   }
 
   export async function addPopupMarkerAndZoom(layer: string, spec: MarkerSpec) {
@@ -59,7 +52,7 @@
       }
       if (markerLayers.length > 0) {
         markerLayers.forEach((layer) => {
-          provider!.populateLayer(layer, {} as Overlays, new Map<MapMarker, MarkerSpec>());
+          provider!.populateLayer(layer);
         });
       }
     } catch (error) {

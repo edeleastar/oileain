@@ -1,12 +1,25 @@
 import type { LayerGroup, Marker, TileLayer, Map as LeafletMap, Control, LatLng } from "leaflet";
-import type { MarkerLayer, MarkerSpec, MapProvider, MapLocation, BaseLayers, Overlays, MapMarker } from "./map";
+import type { MarkerLayer, MarkerSpec, MapProvider, MapLocation } from "./map";
 import { markerSelected } from "$lib/runes.svelte";
 
-// Types
+export interface BaseLayer {
+  [key: string]: unknown;
+}
+
+export interface OverlayLayer {
+  [key: string]: unknown;
+}
+
+export interface MapMarker {
+  [key: string]: unknown;
+}
+
+export type BaseLayers = Record<string, BaseLayer>;
+export type Overlays = Record<string, OverlayLayer>;
+
 export type LeafletBaseLayers = Record<string, TileLayer>;
 export type LeafletOverlays = Record<string, LayerGroup>;
 
-// Constants
 export const POPUP_OPTIONS = {
   autoClose: false,
   closeOnClick: false,
@@ -19,9 +32,7 @@ export const MARKER_ICON_CONFIG = {
   shadowUrl: "/images/marker-shadow.png"
 } as const;
 
-// Leaflet Map Provider Implementation
 export class LeafletMapProvider implements MapProvider {
-  // Internal state
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private L: any = null;
   private map: LeafletMap | null = null;
@@ -29,14 +40,7 @@ export class LeafletMapProvider implements MapProvider {
   private readonly overlays: LeafletOverlays = {};
   private readonly markerMap = new Map<Marker, MarkerSpec>();
 
-  async initializeMap(
-    id: string,
-    location: MapLocation,
-    zoom: number,
-    minZoom: number,
-    activeLayer: string
-  ): Promise<BaseLayers> {
-    // Import Leaflet
+  async initializeMap(id: string, location: MapLocation, zoom: number, minZoom: number, activeLayer: string) {
     const leaflet = await import("leaflet");
     this.L = leaflet.default;
 
@@ -50,20 +54,11 @@ export class LeafletMapProvider implements MapProvider {
       minZoom
     });
 
-    // Setup layer control
     this.control = this.L.control.layers({}, {}).addTo(this.map);
-
-    // Create base layers
     const baseLayers = this.createBaseLayers();
-
-    // Add initial layer
-    this.map.addLayer(baseLayers[activeLayer] as unknown as TileLayer);
-
-    // Update layer control with base layers
-    this.control.addBaseLayer(baseLayers.Terrain as unknown as TileLayer, "Terrain");
-    this.control.addBaseLayer(baseLayers.Satellite as unknown as TileLayer, "Satellite");
-
-    return baseLayers;
+    this.map!.addLayer(baseLayers[activeLayer] as unknown as TileLayer);
+    this.control!.addBaseLayer(baseLayers.Terrain as unknown as TileLayer, "Terrain");
+    this.control!.addBaseLayer(baseLayers.Satellite as unknown as TileLayer, "Satellite");
   }
 
   destroy(): void {
@@ -76,7 +71,7 @@ export class LeafletMapProvider implements MapProvider {
 
   async addPopupMarkerAndZoom(layer: string, spec: MarkerSpec): Promise<void> {
     if (!this.map || !this.control) return;
-    const overlay = this.getOrCreateOverlay(layer, this.overlays as Overlays) as LayerGroup;
+    const overlay = this.getOrCreateOverlay(layer) as unknown as LayerGroup;
     const popup = this.L.popup(POPUP_OPTIONS).setLatLng([spec.location.lat, spec.location.lng]).setContent(spec.title);
     popup.addTo(overlay);
     this.moveTo(spec.location, 15);
@@ -84,7 +79,7 @@ export class LeafletMapProvider implements MapProvider {
 
   moveTo(location: MapLocation, zoom?: number): void {
     if (!this.map) return;
-    const latLng: LatLng = [location.lat, location.lng] as LatLng;
+    const latLng: LatLng = [location.lat, location.lng] as unknown as LatLng;
     if (zoom) {
       this.map.flyTo(latLng, zoom);
     } else {
@@ -117,32 +112,30 @@ export class LeafletMapProvider implements MapProvider {
     } as BaseLayers;
   }
 
-  getOrCreateOverlay(title: string, overlaysParam: Overlays): OverlayLayer {
+  getOrCreateOverlay(title: string): OverlayLayer {
     // Use internal overlays instead of parameter
     if (!this.overlays[title]) {
       this.overlays[title] = this.L.layerGroup([]) as LayerGroup;
       this.map!.addLayer(this.overlays[title]);
       this.control!.addOverlay(this.overlays[title], title);
     }
-    return this.overlays[title] as OverlayLayer;
+    return this.overlays[title] as unknown as OverlayLayer;
   }
 
-  createMarker(spec: MarkerSpec, markerMapParam: Map<MapMarker, MarkerSpec>): MapMarker {
+  createMarker(spec: MarkerSpec): MapMarker {
     const marker = this.L.marker([spec.location.lat, spec.location.lng]);
     const popup = this.L.popup(POPUP_OPTIONS);
     popup.setContent(`<a href='/poi/${spec.id}'>${spec.title} <small>(click for details)</small></a>`);
     marker.bindPopup(popup);
     marker.bindTooltip(spec.title);
-    markerMapParam.set(marker as MapMarker, spec);
+    this.markerMap.set(marker, spec);
     return marker as MapMarker;
   }
 
-  populateLayer(markerLayer: MarkerLayer, overlaysParam: Overlays, markerMapParam: Map<MapMarker, MarkerSpec>): void {
-    // Use internal overlays and markerMap instead of parameters
-    const group = this.getOrCreateOverlay(markerLayer.title, this.overlays as Overlays) as LayerGroup;
-
+  populateLayer(markerLayer: MarkerLayer): void {
+    const group = this.getOrCreateOverlay(markerLayer.title) as unknown as LayerGroup;
     markerLayer.markerSpecs.forEach((spec) => {
-      const marker = this.createMarker(spec, this.markerMap as Map<MapMarker, MarkerSpec>) as Marker;
+      const marker = this.createMarker(spec);
       marker.addTo(group);
       marker.on("popupopen", () => {
         markerSelected.value = spec;
