@@ -1,9 +1,13 @@
-import { currentTheme, lightMode } from "$lib/runes.svelte";
+import { currentTheme, lightMode, mapProvider } from "$lib/runes.svelte";
 import { OileainIconLib, type IconLib } from "./icons";
 
 export type Theme = {
   name: string; // Theme name
   icons: IconLib; // Theme icons
+};
+
+export type MapProvider = {
+  provider: string;
 };
 
 export const themeService = {
@@ -16,11 +20,15 @@ export const themeService = {
     { name: "vintage", icons: OileainIconLib }
   ] as Theme[],
 
+  mapProviders: [{ provider: "Leaflet" }, { provider: "MapLibre" }] as MapProvider[],
+
   initDisplay(): void {
     const savedMode = localStorage.modeCurrent || "light";
     const savedTheme = localStorage.theme || "tutors";
+    const savedMapProvider = localStorage.mapProvider || "leaflet";
     this.setDisplayMode(savedMode);
     this.setTheme(savedTheme);
+    this.setMapProvider(savedMapProvider);
   },
 
   setDisplayMode(mode: string): void {
@@ -61,5 +69,10 @@ export const themeService = {
     }
     document.documentElement.setAttribute("data-theme", currentTheme.value);
     localStorage.theme = currentTheme.value;
+  },
+
+  setMapProvider(provider: string): void {
+    mapProvider.value = provider;
+    localStorage.mapProvider = provider;
   }
 };

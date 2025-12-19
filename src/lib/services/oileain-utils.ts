@@ -1,5 +1,5 @@
+import type { MarkerLayer, MarkerSpec } from "$lib/ui/maps/map";
 import type { Island, IslandGroup } from "./oileain-types";
-import type { MarkerLayer, MarkerSpec } from "./markers";
 
 // Converter functions to generate Leaflet marker compatible collections
 // from above data structures
