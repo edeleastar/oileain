@@ -232,14 +232,6 @@ export class MapLibreMapProvider implements MapProvider {
     // Get or create overlay source
     const sourceId = this.getOrCreateOverlay(markerLayer.title);
 
-    // Wait for map to be ready
-    if (!this.map.isStyleLoaded()) {
-      this.map.once("style.load", () => {
-        this.populateLayer(markerLayer);
-      });
-      return;
-    }
-
     // Ensure source exists
     if (!this.map.getSource(sourceId)) {
       this.map.addSource(sourceId, {
