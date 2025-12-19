@@ -14,6 +14,7 @@ export type BaseLayers = Record<string, string | object>; // Style URLs or style
 export type Overlays = Record<string, string>; // Source IDs
 
 export class MapLibreMapProvider implements MapProvider {
+  name = "MapLibre" as const;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private maplibre: any = null;
   private map: MapLibreMap | null = null;
@@ -22,6 +23,7 @@ export class MapLibreMapProvider implements MapProvider {
   private currentStyle: string = "";
 
   async initializeMap(id: string, location: MapLocation, zoom: number, minZoom: number, activeLayer: string) {
+    zoom = zoom - 2;
     // Import MapLibre dynamically
     const maplibreModule = await import("maplibre-gl");
     this.maplibre = maplibreModule.default || maplibreModule;
