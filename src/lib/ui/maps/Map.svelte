@@ -1,9 +1,13 @@
 <script lang="ts">
-  import "leaflet/dist/leaflet.css";
   import { onMount, onDestroy } from "svelte";
   import { mapProvider } from "$lib/runes.svelte";
   import { LeafletMapProvider } from "./leaflet-map";
+  import { MapLibreMapProvider } from "./maplibre-map";
   import type { MarkerLayer, MarkerSpec, MapLocation, MapProvider } from "./map";
+
+  // Import CSS - both will be loaded but only one will be used based on provider
+  import "leaflet/dist/leaflet.css";
+  import "maplibre-gl/dist/maplibre-gl.css";
 
   let {
     id = "home-map-id",
@@ -16,7 +20,13 @@
     marker = { id: "", title: "", location: { lat: 53.2734, lng: -7.7783203 } } as MarkerSpec
   } = $props();
 
-  const provider = $state<MapProvider | null>(mapProvider.value === "leaflet" ? new LeafletMapProvider() : null);
+  const provider = $state<MapProvider | null>(
+    mapProvider.value === "leaflet"
+      ? new LeafletMapProvider()
+      : mapProvider.value === "maplibre"
+        ? new MapLibreMapProvider()
+        : null
+  );
 
   async function initializeMap() {
     if (!provider) return;
@@ -64,13 +74,13 @@
   });
 </script>
 
-{#if mapProvider.value === "leaflet" && provider}
+{#if provider}
   <div class="z-10" {id} style="height: {height}vh"></div>
 {:else}
   <div class="text-surface-600-300 flex items-center justify-center bg-surface-200-800" {id} style="height: {height}vh">
     <div class="text-center">
-      <p class="text-lg font-semibold">MapLibre</p>
-      <p class="text-sm">Map provider: {mapProvider.value}</p>
+      <p class="text-lg font-semibold">Map Provider</p>
+      <p class="text-sm">Provider: {mapProvider.value}</p>
     </div>
   </div>
 {/if}
