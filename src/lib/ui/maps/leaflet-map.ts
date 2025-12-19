@@ -26,6 +26,7 @@ export const MARKER_ICON_CONFIG = {
 } as const;
 
 export class LeafletMapProvider implements MapProvider {
+  name = "Leaflet" as const;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private L: any = null;
   private map: LeafletMap | null = null;

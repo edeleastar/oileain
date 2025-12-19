@@ -26,6 +26,7 @@ export interface MapProps {
 }
 
 export interface MapProvider {
+  name: string;
   initializeMap(id: string, location: MapLocation, zoom: number, minZoom: number, activeLayer: string): void;
   destroy(): void;
   addPopupMarkerAndZoom(layer: string, spec: MarkerSpec): Promise<void>;
