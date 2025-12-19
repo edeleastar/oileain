@@ -2,7 +2,8 @@
   import Map from "$lib/ui/maps/Map.svelte";
   import { currentView } from "$lib/runes.svelte";
   import type { PageProps } from "./$types";
-  import type { MarkerLayer } from "$lib/services/markers";
+  import type { MarkerLayer } from "$lib/ui/maps/map";
+
   let { data }: PageProps = $props();
   currentView.value = "Home";
 </script>

@@ -10,15 +10,8 @@ export interface OverlayLayer {
   [key: string]: unknown;
 }
 
-export interface MapMarker {
-  [key: string]: unknown;
-}
-
-export type BaseLayers = Record<string, BaseLayer>;
-export type Overlays = Record<string, OverlayLayer>;
-
-export type LeafletBaseLayers = Record<string, TileLayer>;
-export type LeafletOverlays = Record<string, LayerGroup>;
+export type BaseLayers = Record<string, TileLayer>;
+export type Overlays = Record<string, LayerGroup>;
 
 export const POPUP_OPTIONS = {
   autoClose: false,
@@ -37,7 +30,7 @@ export class LeafletMapProvider implements MapProvider {
   private L: any = null;
   private map: LeafletMap | null = null;
   private control: Control.Layers | null = null;
-  private readonly overlays: LeafletOverlays = {};
+  private readonly overlays: Overlays = {};
   private readonly markerMap = new Map<Marker, MarkerSpec>();
 
   async initializeMap(id: string, location: MapLocation, zoom: number, minZoom: number, activeLayer: string) {
@@ -113,7 +106,6 @@ export class LeafletMapProvider implements MapProvider {
   }
 
   getOrCreateOverlay(title: string): OverlayLayer {
-    // Use internal overlays instead of parameter
     if (!this.overlays[title]) {
       this.overlays[title] = this.L.layerGroup([]) as LayerGroup;
       this.map!.addLayer(this.overlays[title]);
@@ -122,14 +114,14 @@ export class LeafletMapProvider implements MapProvider {
     return this.overlays[title] as unknown as OverlayLayer;
   }
 
-  createMarker(spec: MarkerSpec): MapMarker {
+  createMarker(spec: MarkerSpec): Marker {
     const marker = this.L.marker([spec.location.lat, spec.location.lng]);
     const popup = this.L.popup(POPUP_OPTIONS);
     popup.setContent(`<a href='/poi/${spec.id}'>${spec.title} <small>(click for details)</small></a>`);
     marker.bindPopup(popup);
     marker.bindTooltip(spec.title);
     this.markerMap.set(marker, spec);
-    return marker as MapMarker;
+    return marker;
   }
 
   populateLayer(markerLayer: MarkerLayer): void {

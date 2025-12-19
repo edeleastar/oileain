@@ -16,14 +16,11 @@
     marker = { id: "", title: "", location: { lat: 53.2734, lng: -7.7783203 } } as MarkerSpec
   } = $props();
 
-  //let baseLayers: LeafletBaseLayers = {};
-
   const provider = $state<MapProvider | null>(mapProvider.value === "leaflet" ? new LeafletMapProvider() : null);
 
   async function initializeMap() {
     if (!provider) return;
 
-    // Initialize map using provider
     await provider.initializeMap(id, location as MapLocation, zoom, minZoom, activeLayer);
   }
 
