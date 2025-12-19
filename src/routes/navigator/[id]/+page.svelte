@@ -2,10 +2,11 @@
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import Map from "$lib/ui/maps/Map.svelte";
-  import IslandDescription from "$lib/ui/islandinfo/IslandDescription.svelte";
   import { currentIsland, currentView, markerSelected } from "$lib/runes.svelte";
-  import type { MarkerSpec } from "$lib/services/markers";
+
   import type { PageProps } from "./$types";
+  import type { MarkerSpec } from "$lib/ui/maps/map";
+  import IslandDescription from "$lib/ui/IslandDescription.svelte";
 
   let { data }: PageProps = $props();
   let mapTerrain: Map;

@@ -1,5 +1,6 @@
+import type { MarkerLayer } from "$lib/ui/maps/map";
 import type { Island, IslandGroup } from "./oileain-types";
-import type { MarkerLayer } from "./markers";
+
 import { generateMarkerLayer, generateMarkerLayers, generateMarkerSpec } from "./oileain-utils";
 
 // Cache & index island data

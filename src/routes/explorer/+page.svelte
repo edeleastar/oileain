@@ -2,8 +2,8 @@
   import { currentIsland, currentView, markerSelected } from "$lib/runes.svelte";
   import { oileainService } from "$lib/services/oileain-service";
   import { generateMarkerSpec } from "$lib/services/oileain-utils";
-  import IslandDescription from "$lib/ui/islandinfo/IslandDescription.svelte";
-  import IslandLatLng from "$lib/ui/islandinfo/IslandLatLng.svelte";
+  import IslandDescription from "$lib/ui/IslandDescription.svelte";
+  import IslandLatLng from "$lib/ui/IslandLatLng.svelte";
   import Map from "$lib/ui/maps/Map.svelte";
   import type { PageProps } from "./$types";
   let { data }: PageProps = $props();

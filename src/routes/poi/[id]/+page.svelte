@@ -1,6 +1,6 @@
 <script lang="ts">
-  import IslandCoordinates from "$lib/ui/islandinfo/IslandCoordinates.svelte";
-  import IslandDescription from "$lib/ui/islandinfo/IslandDescription.svelte";
+  import IslandCoordinates from "$lib/ui/IslandCoordinates.svelte";
+  import IslandDescription from "$lib/ui/IslandDescription.svelte";
   import Map from "$lib/ui/maps/Map.svelte";
   import { currentIsland, currentView } from "$lib/runes.svelte";
   import type { PageProps } from "./$types";

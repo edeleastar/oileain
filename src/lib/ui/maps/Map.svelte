@@ -1,8 +1,10 @@
 <script lang="ts">
-  import LeafletMap from "./LeafletMap.svelte";
+  import "leaflet/dist/leaflet.css";
+  import { onMount, onDestroy } from "svelte";
   import { mapProvider } from "$lib/runes.svelte";
-  import type { MarkerLayer, MarkerSpec } from "../../services/markers";
-  import type { LatLng } from "leaflet";
+  import { LeafletMapProvider } from "./leaflet-map";
+  import type { MarkerLayer, MarkerSpec, MapLocation, MapProvider, Overlays, MapMarker } from "./map";
+  import type { LeafletBaseLayers } from "./leaflet-map";
 
   let {
     id = "home-map-id",
@@ -15,43 +17,65 @@
     marker = { id: "", title: "", location: { lat: 53.2734, lng: -7.7783203 } } as MarkerSpec
   } = $props();
 
-  let leafletMapInstance: LeafletMap | null = null;
+  let baseLayers: LeafletBaseLayers = {};
 
-  // Forward public API methods
-  export async function addPopupMarkerAndZoom(layer: string, spec: MarkerSpec) {
-    if (mapProvider.value === "leaflet" && leafletMapInstance) {
-      return leafletMapInstance.addPopupMarkerAndZoom(layer, spec);
-    }
-    // MapLibre implementation will be added later
+  const provider = $state<MapProvider | null>(mapProvider.value === "leaflet" ? new LeafletMapProvider() : null);
+
+  async function initializeMap() {
+    if (!provider) return;
+
+    // Initialize map using provider
+    baseLayers = (await provider.initializeMap(
+      id,
+      location as MapLocation,
+      zoom,
+      minZoom,
+      activeLayer
+    )) as unknown as LeafletBaseLayers;
   }
 
-  export function moveTo(location: LatLng, zoom?: number): void {
-    if (mapProvider.value === "leaflet" && leafletMapInstance) {
-      return leafletMapInstance.moveTo(location, zoom);
-    }
-    // MapLibre implementation will be added later
+  export async function addPopupMarkerAndZoom(layer: string, spec: MarkerSpec) {
+    if (!provider) return;
+    await provider.addPopupMarkerAndZoom(layer, spec);
+  }
+
+  export function moveTo(location: MapLocation, zoom?: number): void {
+    if (!provider) return;
+    provider.moveTo(location, zoom);
   }
 
   export async function addMarker(lat: number, lng: number, popupText: string) {
-    if (mapProvider.value === "leaflet" && leafletMapInstance) {
-      return leafletMapInstance.addMarker(lat, lng, popupText);
-    }
-    // MapLibre implementation will be added later
+    if (!provider) return;
+    await provider.addMarker(lat, lng, popupText);
   }
+
+  onMount(async () => {
+    try {
+      await initializeMap();
+      if (!provider) return;
+
+      if (marker.id) {
+        await addPopupMarkerAndZoom("default", marker);
+      }
+      if (markerLayers.length > 0) {
+        markerLayers.forEach((layer) => {
+          provider!.populateLayer(layer, {} as Overlays, new Map<MapMarker, MarkerSpec>());
+        });
+      }
+    } catch (error) {
+      console.error("Failed to initialize map:", error);
+    }
+  });
+
+  onDestroy(() => {
+    if (provider) {
+      provider.destroy();
+    }
+  });
 </script>
 
-{#if mapProvider.value === "leaflet"}
-  <LeafletMap
-    bind:this={leafletMapInstance}
-    {id}
-    {height}
-    {location}
-    {zoom}
-    {minZoom}
-    {activeLayer}
-    {markerLayers}
-    {marker}
-  />
+{#if mapProvider.value === "leaflet" && provider}
+  <div class="z-10" {id} style="height: {height}vh"></div>
 {:else}
   <div class="text-surface-600-300 flex items-center justify-center bg-surface-200-800" {id} style="height: {height}vh">
     <div class="text-center">
