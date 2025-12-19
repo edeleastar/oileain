@@ -3,6 +3,7 @@
   import Icon from "$lib/ui/components/Icon.svelte";
   import LightModeSelector from "./LightModeSelector.svelte";
   import ThemeSelector from "./ThemeSelector.svelte";
+  import MapProviderSelector from "./MapProviderSelector.svelte";
 </script>
 
 {#snippet menuSelector()}
@@ -17,6 +18,8 @@
     <LightModeSelector />
     <hr />
     <ThemeSelector />
+    <hr />
+    <MapProviderSelector />
   </div>
 {/snippet}
 

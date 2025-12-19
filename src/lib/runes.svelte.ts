@@ -7,4 +7,4 @@ export const currentView = $state({ value: "Home: " });
 
 export const lightMode = $state({ value: "light" });
 export const currentTheme = $state({ value: "oileain" });
-export const mapProvider = $state({ value: "maplibre" as "leaflet" | "maplibre" });
+export const mapProvider = $state({ value: "leaflet" });

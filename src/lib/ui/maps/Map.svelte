@@ -20,7 +20,7 @@
     marker = { id: "", title: "", location: { lat: 53.2734, lng: -7.7783203 } } as MarkerSpec
   } = $props();
 
-  const provider = $state<MapProvider | null>(
+  let provider = $state<MapProvider | null>(
     mapProvider.value === "leaflet"
       ? new LeafletMapProvider()
       : mapProvider.value === "maplibre"
@@ -28,11 +28,56 @@
         : null
   );
 
+  let isMounted = $state(false);
+  let previousProvider = $state<string | null>(null);
+
   async function initializeMap() {
     if (!provider) return;
 
     await provider.initializeMap(id, location as MapLocation, zoom, minZoom, activeLayer);
+
+    // Add markers after initialization
+    if (marker.id) {
+      await addPopupMarkerAndZoom("default", marker);
+    }
+    if (markerLayers.length > 0) {
+      markerLayers.forEach((layer) => {
+        provider!.populateLayer(layer);
+      });
+    }
   }
+
+  // React to mapProvider changes and reload the map
+  $effect(() => {
+    if (!isMounted) return; // Wait for component to mount
+
+    const currentProvider = mapProvider.value;
+
+    // Only reload if the provider actually changed
+    if (previousProvider === currentProvider) return;
+
+    // If we have an existing provider, destroy it first
+    if (provider) {
+      provider.destroy();
+      provider = null;
+    }
+
+    // Create new provider based on current value
+    provider =
+      currentProvider === "leaflet"
+        ? new LeafletMapProvider()
+        : currentProvider === "maplibre"
+          ? new MapLibreMapProvider()
+          : null;
+
+    // Update previous provider to prevent unnecessary reloads
+    previousProvider = currentProvider;
+
+    // Reinitialize the map with the new provider
+    if (provider) {
+      initializeMap();
+    }
+  });
 
   export async function addPopupMarkerAndZoom(layer: string, spec: MarkerSpec) {
     if (!provider) return;
@@ -50,20 +95,11 @@
   }
 
   onMount(async () => {
-    try {
+    isMounted = true;
+    previousProvider = mapProvider.value;
+    // Initial map initialization
+    if (provider) {
       await initializeMap();
-      if (!provider) return;
-
-      if (marker.id) {
-        await addPopupMarkerAndZoom("default", marker);
-      }
-      if (markerLayers.length > 0) {
-        markerLayers.forEach((layer) => {
-          provider!.populateLayer(layer);
-        });
-      }
-    } catch (error) {
-      console.error("Failed to initialize map:", error);
     }
   });
 
