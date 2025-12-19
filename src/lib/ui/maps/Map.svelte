@@ -20,16 +20,18 @@
     marker = { id: "", title: "", location: { lat: 53.2734, lng: -7.7783203 } } as MarkerSpec
   } = $props();
 
-  let provider = $state<MapProvider | null>(
-    mapProvider.value === "leaflet"
+  let provider = $state<MapProvider | null>(null);
+  let isMounted = $state(false);
+  let previousProviderValue = $state<string | null>(null);
+
+  // Create provider based on mapProvider rune value
+  function createProvider(): MapProvider | null {
+    return mapProvider.value === "leaflet"
       ? new LeafletMapProvider()
       : mapProvider.value === "maplibre"
         ? new MapLibreMapProvider()
-        : null
-  );
-
-  let isMounted = $state(false);
-  let previousProvider = $state<string | null>(null);
+        : null;
+  }
 
   async function initializeMap() {
     if (!provider) return;
@@ -51,29 +53,24 @@
   $effect(() => {
     if (!isMounted) return; // Wait for component to mount
 
-    const currentProvider = mapProvider.value;
+    const currentProviderValue = mapProvider.value;
 
-    // Only reload if the provider actually changed
-    if (previousProvider === currentProvider) return;
+    // Only reload if the provider value actually changed
+    if (previousProviderValue === currentProviderValue) return;
 
-    // If we have an existing provider, destroy it first
+    // Destroy existing provider if it exists
     if (provider) {
       provider.destroy();
       provider = null;
     }
 
-    // Create new provider based on current value
-    provider =
-      currentProvider === "leaflet"
-        ? new LeafletMapProvider()
-        : currentProvider === "maplibre"
-          ? new MapLibreMapProvider()
-          : null;
+    // Create new provider
+    provider = createProvider();
 
-    // Update previous provider to prevent unnecessary reloads
-    previousProvider = currentProvider;
+    // Update tracking
+    previousProviderValue = currentProviderValue;
 
-    // Reinitialize the map with the new provider
+    // Initialize the new provider
     if (provider) {
       initializeMap();
     }
@@ -96,10 +93,16 @@
 
   onMount(async () => {
     isMounted = true;
-    previousProvider = mapProvider.value;
-    // Initial map initialization
+    previousProviderValue = mapProvider.value;
+    // Create initial provider
+    provider = createProvider();
+    // Initialize the map
     if (provider) {
-      await initializeMap();
+      try {
+        await initializeMap();
+      } catch (error) {
+        console.error("Failed to initialize map:", error);
+      }
     }
   });
 
