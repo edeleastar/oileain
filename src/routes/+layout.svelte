@@ -2,7 +2,13 @@
   import "./layout.css";
   import favicon from "$lib/assets/favicon.svg";
   import AppShell from "$lib/ui/appbar/AppShell.svelte";
+  import { browser } from "$app/environment";
+  import { themeService } from "$lib/ui/themes/themes.svelte";
   let { children } = $props();
+
+  if (browser) {
+    themeService.initDisplay();
+  }
 </script>
 
 <svelte:head>
