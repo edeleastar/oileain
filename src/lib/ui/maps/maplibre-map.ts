@@ -13,6 +13,19 @@ export interface OverlayLayer {
 export type BaseLayers = Record<string, string | object>; // Style URLs or style objects
 export type Overlays = Record<string, string>; // Source IDs
 
+export const MAPLIBRE_CONFIG = {
+  STYLE_VERSION: 8,
+  TILE_SIZE: 256,
+  MAX_ZOOM: 19,
+  ZOOM_OFFSET: -2,
+  DEFAULT_MARKER_ZOOM: 15
+} as const;
+
+export const EMPTY_GEOJSON = {
+  type: "FeatureCollection",
+  features: []
+} as const;
+
 export class MapLibreMapProvider implements MapProvider {
   name = "MapLibre" as const;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,55 +34,66 @@ export class MapLibreMapProvider implements MapProvider {
   private readonly overlays: Overlays = {};
   private readonly markerMap = new Map<Marker, MarkerSpec>();
   private readonly markerOverlayMap = new Map<Marker, string>(); // Track which overlay each marker belongs to
-  private currentStyle: string = "";
+  private activeLayerName = "";
   private baseLayers: BaseLayers = {};
   private overlayVisibility: Record<string, boolean> = {};
   private layerControlContainer: HTMLElement | null = null;
 
   async initializeMap(id: string, location: MapLocation, zoom: number, minZoom: number, activeLayer: string) {
-    zoom = zoom - 2;
-    // Import MapLibre dynamically
+    await this.loadLibrary();
+    this.validateContainer(id);
+    this.baseLayers = this.createBaseLayers();
+    await this.createMapInstance(id, location, zoom + MAPLIBRE_CONFIG.ZOOM_OFFSET, minZoom, activeLayer);
+    await this.waitForLoad();
+    this.setupControls();
+  }
+
+  private async loadLibrary(): Promise<void> {
     const maplibreModule = await import("maplibre-gl");
     this.maplibre = maplibreModule.default || maplibreModule;
+  }
 
-    // Get container element
+  private validateContainer(id: string): void {
     const container = document.getElementById(id);
     if (!container) {
       throw new Error(`Map container with id "${id}" not found`);
     }
+  }
 
-    // Create base layers/styles
-    this.baseLayers = this.createBaseLayers();
+  private async createMapInstance(
+    id: string,
+    location: MapLocation,
+    zoom: number,
+    minZoom: number,
+    activeLayer: string
+  ): Promise<void> {
     const style = this.baseLayers[activeLayer] || this.baseLayers.Terrain;
+    this.activeLayerName = activeLayer || "Terrain";
 
-    // Initialize map with enhanced settings for better detail
     this.map = new this.maplibre.Map({
       container: id,
-      style: style,
+      style,
       center: [location.lng, location.lat], // MapLibre uses [lng, lat]
-      zoom: zoom,
-      minZoom: minZoom,
-      maxZoom: 19, // Allow higher zoom for more detail (OSM supports up to 19)
+      zoom,
+      minZoom,
+      maxZoom: MAPLIBRE_CONFIG.MAX_ZOOM,
       antialias: true, // Enable antialiasing for smoother rendering
       pitch: 0, // Flat view
       bearing: 0 // North up
     });
+  }
 
-    this.currentStyle = typeof style === "string" ? style : JSON.stringify(style);
-
-    // Wait for map to load
+  private async waitForLoad(): Promise<void> {
     await new Promise<void>((resolve) => {
       this.map!.on("load", () => {
-        // Ensure all layers are visible and detailed
-        // This helps show more map features
         resolve();
       });
     });
+  }
 
-    // Add navigation controls for better user experience
+  private setupControls(): void {
+    if (!this.map) return;
     this.map.addControl(new this.maplibre.NavigationControl(), "top-right");
-
-    // Add layer control
     this.createLayerControl();
   }
 
@@ -127,64 +151,38 @@ export class MapLibreMapProvider implements MapProvider {
   }
 
   createBaseLayers(): BaseLayers {
-    // Using OpenStreetMap tiles directly with a custom style for maximum detail
-    // Terrain style - Custom style using OSM tiles with detailed features
-    const terrainStyle = this.createOSMStyle();
-
-    // Satellite style - Using Esri World Imagery tiles (free, no API key needed)
-    const satelliteStyle = this.createSatelliteStyle();
-
     return {
-      Terrain: terrainStyle,
-      Satellite: satelliteStyle
+      Terrain: this.createRasterStyle(
+        "osm-tiles",
+        ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      ),
+      Satellite: this.createRasterStyle(
+        "esri-satellite",
+        ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+        "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+      )
     };
   }
 
-  private createOSMStyle(): object {
-    // Create a style object that uses OpenStreetMap tiles directly
-    // This provides detailed maps with roads, labels, and features
+  private createRasterStyle(sourceId: string, tiles: string[], attribution: string): object {
     return {
-      version: 8,
+      version: MAPLIBRE_CONFIG.STYLE_VERSION,
       sources: {
-        "osm-tiles": {
+        [sourceId]: {
           type: "raster",
-          tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-          tileSize: 256,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          tiles,
+          tileSize: MAPLIBRE_CONFIG.TILE_SIZE,
+          attribution
         }
       },
       layers: [
         {
-          id: "osm-tiles",
+          id: sourceId,
           type: "raster",
-          source: "osm-tiles",
+          source: sourceId,
           minzoom: 0,
-          maxzoom: 19
-        }
-      ]
-    };
-  }
-
-  private createSatelliteStyle(): object {
-    // Create a style using Esri World Imagery (satellite) tiles
-    return {
-      version: 8,
-      sources: {
-        "esri-satellite": {
-          type: "raster",
-          tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
-          tileSize: 256,
-          attribution:
-            "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
-        }
-      },
-      layers: [
-        {
-          id: "esri-satellite",
-          type: "raster",
-          source: "esri-satellite",
-          minzoom: 0,
-          maxzoom: 19
+          maxzoom: MAPLIBRE_CONFIG.MAX_ZOOM
         }
       ]
     };
@@ -192,42 +190,48 @@ export class MapLibreMapProvider implements MapProvider {
 
   getOrCreateOverlay(title: string): string {
     if (!this.overlays[title]) {
-      // Create a unique source ID for this overlay
       const sourceId = `overlay-${title.toLowerCase().replace(/\s+/g, "-")}`;
       this.overlays[title] = sourceId;
-      this.overlayVisibility[title] = true; // Default to visible
+      this.overlayVisibility[title] = true;
 
-      // Add source and layer to map if map is loaded
       if (this.map) {
-        const addSource = () => {
-          if (!this.map!.getSource(sourceId)) {
-            this.map!.addSource(sourceId, {
-              type: "geojson",
-              data: {
-                type: "FeatureCollection",
-                features: []
-              }
-            });
-          }
-        };
-
-        if (this.map.isStyleLoaded()) {
-          addSource();
-        } else {
-          this.map.once("style.load", addSource);
-        }
+        this.ensureSourceExists(sourceId);
       }
 
-      // Add overlay to layer control
       this.addOverlayToControl(title);
     }
     return this.overlays[title];
   }
 
+  private ensureSourceExists(sourceId: string): void {
+    if (!this.map) return;
+
+    const addSource = () => {
+      if (!this.map!.getSource(sourceId)) {
+        this.map!.addSource(sourceId, {
+          type: "geojson",
+          data: EMPTY_GEOJSON
+        });
+      }
+    };
+
+    if (this.map.isStyleLoaded()) {
+      addSource();
+    } else {
+      this.map.once("style.load", addSource);
+    }
+  }
+
   private createLayerControl(): void {
     if (!this.map) return;
 
-    // Create layer control container
+    const control = this.createControlContainer();
+    control.appendChild(this.createBaseLayerSection());
+    control.appendChild(this.createOverlaySection());
+    this.attachControl(control);
+  }
+
+  private createControlContainer(): HTMLElement {
     const control = document.createElement("div");
     control.className = "maplibregl-ctrl maplibregl-ctrl-group";
     control.style.cssText = `
@@ -239,55 +243,63 @@ export class MapLibreMapProvider implements MapProvider {
       font-size: 12px;
       max-width: 200px;
     `;
+    return control;
+  }
 
-    // Base layers section
+  private createBaseLayerSection(): HTMLElement {
     const baseLayersDiv = document.createElement("div");
     baseLayersDiv.style.marginBottom = "10px";
-    const baseLayersLabel = document.createElement("div");
-    baseLayersLabel.textContent = "Base Layers";
-    baseLayersLabel.style.fontWeight = "bold";
-    baseLayersLabel.style.marginBottom = "5px";
+
+    const baseLayersLabel = this.createSectionLabel("Base Layers");
     baseLayersDiv.appendChild(baseLayersLabel);
 
-    // Add base layer radio buttons
     Object.keys(this.baseLayers).forEach((layerName) => {
-      const label = document.createElement("label");
-      label.style.cssText = "display: block; margin: 3px 0; cursor: pointer;";
-
-      const input = document.createElement("input");
-      input.type = "radio";
-      input.name = "baseLayer";
-      input.value = layerName;
-      input.checked =
-        this.currentStyle ===
-        (typeof this.baseLayers[layerName] === "string"
-          ? this.baseLayers[layerName]
-          : JSON.stringify(this.baseLayers[layerName]));
-
-      input.addEventListener("change", () => {
-        if (input.checked) {
-          this.switchBaseLayer(layerName);
-        }
-      });
-
-      label.appendChild(input);
-      label.appendChild(document.createTextNode(` ${layerName}`));
-      baseLayersDiv.appendChild(label);
+      baseLayersDiv.appendChild(this.createBaseLayerRadio(layerName));
     });
 
-    control.appendChild(baseLayersDiv);
+    return baseLayersDiv;
+  }
 
-    // Overlays section
+  private createSectionLabel(text: string): HTMLElement {
+    const label = document.createElement("div");
+    label.textContent = text;
+    label.style.fontWeight = "bold";
+    label.style.marginBottom = "5px";
+    return label;
+  }
+
+  private createBaseLayerRadio(layerName: string): HTMLElement {
+    const label = document.createElement("label");
+    label.style.cssText = "display: block; margin: 3px 0; cursor: pointer;";
+
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = "baseLayer";
+    input.value = layerName;
+    input.checked = this.activeLayerName === layerName;
+
+    input.addEventListener("change", () => {
+      if (input.checked) {
+        this.switchBaseLayer(layerName);
+      }
+    });
+
+    label.appendChild(input);
+    label.appendChild(document.createTextNode(` ${layerName}`));
+    return label;
+  }
+
+  private createOverlaySection(): HTMLElement {
     const overlaysDiv = document.createElement("div");
     overlaysDiv.id = "maplibre-overlays";
-    const overlaysLabel = document.createElement("div");
-    overlaysLabel.textContent = "Overlays";
-    overlaysLabel.style.fontWeight = "bold";
-    overlaysLabel.style.marginBottom = "5px";
+    const overlaysLabel = this.createSectionLabel("Overlays");
     overlaysDiv.appendChild(overlaysLabel);
-    control.appendChild(overlaysDiv);
+    return overlaysDiv;
+  }
 
-    // Add control to map
+  private attachControl(control: HTMLElement): void {
+    if (!this.map) return;
+
     const mapContainer = this.map.getContainer();
     const controlContainer = document.createElement("div");
     controlContainer.className = "maplibregl-ctrl-top-left";
@@ -301,52 +313,59 @@ export class MapLibreMapProvider implements MapProvider {
   private switchBaseLayer(layerName: string): void {
     if (!this.map || !this.baseLayers[layerName]) return;
 
-    const style = this.baseLayers[layerName];
-    this.currentStyle = typeof style === "string" ? style : JSON.stringify(style);
+    this.activeLayerName = layerName;
+    const preservedMarkers = this.preserveMarkers();
+    this.map.setStyle(this.baseLayers[layerName]);
 
-    // Store current markers before style change
-    const markers: Array<{ marker: Marker; spec: MarkerSpec }> = [];
-    this.markerMap.forEach((spec, marker) => {
-      markers.push({ marker, spec });
-    });
-
-    // Switch style
-    this.map.setStyle(style);
-
-    // Wait for style to load, then re-add markers
     this.map.once("style.load", () => {
-      // Re-add all markers with their overlay associations
-      markers.forEach(({ marker, spec }) => {
-        const overlayTitle = this.markerOverlayMap.get(marker);
-        const newMarker = this.createMarker(spec);
-        newMarker.addTo(this.map!);
-        this.markerMap.delete(marker);
-        this.markerMap.set(newMarker, spec);
-        if (overlayTitle) {
-          this.markerOverlayMap.delete(marker);
-          this.markerOverlayMap.set(newMarker, overlayTitle);
-          // Restore visibility based on overlay visibility state
-          const isVisible = this.overlayVisibility[overlayTitle] !== false;
-          const markerEl = newMarker.getElement();
-          if (markerEl) {
-            markerEl.style.display = isVisible ? "block" : "none";
-          }
-        }
-      });
+      this.restoreMarkers(preservedMarkers);
+      this.restoreOverlaySources();
+    });
+  }
 
-      // Re-add overlay sources
-      Object.keys(this.overlays).forEach((title) => {
-        const sourceId = this.overlays[title];
-        if (!this.map!.getSource(sourceId)) {
-          this.map!.addSource(sourceId, {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: []
-            }
-          });
-        }
+  private preserveMarkers(): Array<{ marker: Marker; spec: MarkerSpec; overlay: string | undefined }> {
+    const markers: Array<{ marker: Marker; spec: MarkerSpec; overlay: string | undefined }> = [];
+    this.markerMap.forEach((spec, marker) => {
+      markers.push({
+        marker,
+        spec,
+        overlay: this.markerOverlayMap.get(marker)
       });
+    });
+    return markers;
+  }
+
+  private restoreMarkers(
+    preservedMarkers: Array<{ marker: Marker; spec: MarkerSpec; overlay: string | undefined }>
+  ): void {
+    preservedMarkers.forEach(({ marker, spec, overlay }) => {
+      const newMarker = this.createMarker(spec);
+      newMarker.addTo(this.map!);
+      this.markerMap.delete(marker);
+      this.markerMap.set(newMarker, spec);
+
+      if (overlay) {
+        this.markerOverlayMap.delete(marker);
+        this.markerOverlayMap.set(newMarker, overlay);
+        this.restoreMarkerVisibility(newMarker, overlay);
+      }
+    });
+  }
+
+  private restoreMarkerVisibility(marker: Marker, overlayTitle: string): void {
+    const isVisible = this.overlayVisibility[overlayTitle] !== false;
+    const markerEl = marker.getElement();
+    if (markerEl) {
+      markerEl.style.display = isVisible ? "block" : "none";
+    }
+  }
+
+  private restoreOverlaySources(): void {
+    if (!this.map) return;
+
+    Object.keys(this.overlays).forEach((title) => {
+      const sourceId = this.overlays[title];
+      this.ensureSourceExists(sourceId);
     });
   }
 
